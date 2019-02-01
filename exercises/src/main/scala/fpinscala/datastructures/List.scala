@@ -62,7 +62,56 @@ object List { // `List` companion object. Contains functions for creating and wo
 
   def length[A](l: List[A]): Int = ???
 
-  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = ???
+  @annotation.tailrec
+  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B =
+    l match {
+      case Nil => z
+      case Cons(x, xs) => foldLeft(xs, f(z, x))(f)
+    }
 
-  def map[A,B](l: List[A])(f: A => B): List[B] = ???
+  def reverseMap[A,B](l: List[A])(f: A => B): List[B] = foldLeft[A, List[B]](l, Nil)((xs, x) => Cons(f(x), xs))
+
+  def reverse[A](l: List[A]) = reverseMap(l)((x) => x)
+
+  def map[A,B](l: List[A])(f: A => B): List[B] = reverse(reverseMap(l)(f))
+
+  def addOne(l: List[Int]) = map(l)(_ + 1)
+
+  def allStrings(l: List[Double]) = map(l)(_.toString)
+
+  def filter2[A](as: List[A])(f: A => Boolean): List[A] =
+    as match {
+      case Nil => Nil
+      case Cons(x, xs) if f(x) => Cons(x, filter(xs)(f))
+      case Cons(x, xs) => filter(xs)(f)
+    }
+
+  def flatMap[A,B](as: List[A])(f: A=>List[B]): List[B] = reverse(foldLeft[List[B], List[B]](reverseMap(as)(f), Nil)(append(_,_)))
+
+  def filter[A](as: List[A])(f: A => Boolean): List[A] = flatMap(as)((a) => if (f(a)) List(a) else Nil)
+
+  def zip[A,B](as: List[A], bs: List[B]): List[(A,B)] = (as, bs) match {
+    case (_, Nil) => Nil
+    case (Nil, _) => Nil
+    case (Cons(a,as), Cons(b,bs)) => Cons((a,b), zip(as, bs))
+  }
+
+  def zipWith[A,B,C](as: List[A], bs: List[B])(f: (A,B) => C): List[C] = map(zip(as, bs))({case (a,b) => f(a,b)})
+
+  def addLists(l: List[Int], r: List[Int]) = zipWith(l, r)(_ + _)
+
+  @annotation.tailrec
+  def isPrefix[A](l: List[A], prefix: List[A]): Boolean = (l, prefix) match {
+    case (_, Nil) => true
+    case (Nil, _) => false
+    case (Cons(m, ms), Cons(n,ns)) if m != n => false
+    case (Cons(m, ms), Cons(n,ns)) => isPrefix(ms, ns)
+  }
+
+  @annotation.tailrec
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = (sup, sub) match {
+    case (Nil, _) => false
+    case _ if isPrefix(sup, sub) => true
+    case (Cons(_, ms), _) => hasSubsequence(ms, sub)
+  }
 }

@@ -1,0 +1,15 @@
+import fpinscala.datastructures._
+Cons(1, Nil)
+List.addOne(List(1,2,3))
+List.allStrings(List(1.2, 3.14, 4))
+List.filter(List(1,2,3,4,5))((x) => x % 2 == 0)
+List.addLists(List(1,2,3), List(4,5,6))
+List.hasSubsequence(List(1,2,3,4), List(1,2))
+List.hasSubsequence(List(1,2,3,4), List(1,2,3,4))
+List.hasSubsequence(List(1,2,3,4), List(2,3,4))
+List.hasSubsequence(List(1,2,3,4), List(3,2,1))
+
+Tree.size(Branch(Branch(Leaf(1),Leaf(1)),Leaf(1)))
+Tree.maximum(Branch(Branch(Leaf(20),Leaf(-30)),Leaf(100)))
+Tree.depth(Branch(Branch(Branch(Branch(Leaf(0), Leaf(0)),Leaf(0)),Leaf(0)),Leaf(0)))
+Tree.map(Branch(Branch(Leaf(1),Leaf(1)),Leaf(1)))(_+6)
